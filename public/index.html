@@ -552,6 +552,37 @@
 
     .add-rating-btn:hover { opacity: 0.8; }
 
+    /* 정렬 바 */
+    .sort-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .sort-btn {
+      padding: 6px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      background: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .sort-btn:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .sort-btn.active {
+      background: var(--text-primary);
+      border-color: var(--text-primary);
+      color: #fff;
+    }
+
     .empty {
       text-align: center;
       padding: 64px 20px;
@@ -695,12 +726,20 @@
       <button class="submit-btn" onclick="addRestaurant()">등록하기</button>
     </div>
 
+    <div class="sort-bar">
+      <button class="sort-btn active" data-sort="recent" onclick="setSort('recent')">최신순</button>
+      <button class="sort-btn" data-sort="name" onclick="setSort('name')">ㄱㄴㄷ순</button>
+      <button class="sort-btn" data-sort="score-desc" onclick="setSort('score-desc')">점수 높은순</button>
+      <button class="sort-btn" data-sort="score-asc" onclick="setSort('score-asc')">점수 낮은순</button>
+    </div>
+
     <div id="list"></div>
 
   </div>
 
   <script>
     let data = [];
+    let currentSort = 'recent';
 
     async function loadData() {
       const localData = JSON.parse(localStorage.getItem('restaurantRatings') || '[]');
@@ -757,6 +796,26 @@
       } catch (e) {
         console.error('서버 저장 실패, localStorage에만 저장됨', e);
       }
+    }
+
+    function setSort(type) {
+      currentSort = type;
+      document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === type));
+      render();
+    }
+
+    function getSorted() {
+      const sorted = [...data];
+      if (currentSort === 'name') {
+        sorted.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+      } else if (currentSort === 'score-desc') {
+        sorted.sort((a, b) => avg(b.ratings) - avg(a.ratings));
+      } else if (currentSort === 'score-asc') {
+        sorted.sort((a, b) => avg(a.ratings) - avg(b.ratings));
+      } else {
+        sorted.sort((a, b) => b.id - a.id);
+      }
+      return sorted;
     }
 
     function avg(ratings) {
@@ -941,7 +1000,7 @@
         return;
       }
 
-      el.innerHTML = data.map(r => {
+      el.innerHTML = getSorted().map(r => {
         const a = avg(r.ratings);
         const c = scoreColor(a);
         const isBest = r.ratings.length > 0 && a >= 8.5;
