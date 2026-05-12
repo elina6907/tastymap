@@ -53,6 +53,37 @@
       letter-spacing: -0.2px;
     }
 
+    .header-filters {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .filter-btn {
+      padding: 6px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      background: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .filter-btn.active {
+      background: var(--text-primary);
+      border-color: var(--text-primary);
+      color: #fff;
+    }
+
     .container {
       max-width: 680px;
       margin: 0 auto;
@@ -731,7 +762,12 @@
 
   <div class="header">
     <h1>맛집지도</h1>
-    <p>10점 만점, 함께 만드는 평점 시스템</p>
+    <p>함께 높은 점수를 준 맛집</p>
+    <div class="header-filters">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">전체</button>
+      <button class="filter-btn" data-filter="음식점" onclick="setFilter('음식점')">음식점</button>
+      <button class="filter-btn" data-filter="카페/베이커리" onclick="setFilter('카페/베이커리')">카페/베이커리</button>
+    </div>
   </div>
 
   <div class="container">
@@ -856,6 +892,7 @@
   <script>
     let data = [];
     let currentSort = 'recent';
+    let currentFilter = 'all';
 
     async function loadData() {
       const localData = JSON.parse(localStorage.getItem('restaurantRatings') || '[]');
@@ -921,8 +958,17 @@
       render();
     }
 
+    function setFilter(type) {
+      currentFilter = type;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === type));
+      render();
+    }
+
     function getSorted() {
-      const sorted = [...data];
+      let sorted = [...data];
+      if (currentFilter !== 'all') {
+        sorted = sorted.filter(r => r.category === currentFilter);
+      }
       if (currentSort === 'name') {
         sorted.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
       } else if (currentSort === 'score-desc') {
