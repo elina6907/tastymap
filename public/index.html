@@ -102,6 +102,10 @@
       grid-template-columns: 1fr 1fr;
     }
 
+    .field-group.row-links-3 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
     .field-group.single {
       grid-template-columns: 1fr;
     }
@@ -717,7 +721,7 @@
       .header p { font-size: 16px; }
       .container { padding: 0 16px 60px; }
       .add-section, .card { padding: 24px 20px; }
-      .field-group, .field-group.three-col, .field-group.two-col, .field-group.row-main, .field-group.row-detail, .field-group.row-links { grid-template-columns: 1fr; }
+      .field-group, .field-group.three-col, .field-group.two-col, .field-group.row-main, .field-group.row-detail, .field-group.row-links, .field-group.row-links-3 { grid-template-columns: 1fr; }
       .field-group.row-main { grid-template-columns: 1fr 80px; }
       .card-name { font-size: 18px; }
       .score-badge .num { font-size: 18px; }
@@ -832,9 +836,12 @@
           <input type="text" id="authorName" placeholder="이름 (익명가능)">
         </div>
       </div>
-      <div class="field-group row-links">
+      <div class="field-group row-links-3">
         <div class="field">
           <input type="text" id="naverLink" placeholder="네이버 지도 링크">
+        </div>
+        <div class="field">
+          <input type="text" id="firstMenu" placeholder="먹은 메뉴">
         </div>
         <div class="field">
           <input type="text" id="firstComment" placeholder="코멘트">
@@ -1007,6 +1014,7 @@
       const name = document.getElementById('restaurantName').value.trim();
       const author = document.getElementById('authorName').value.trim();
       const link = document.getElementById('naverLink').value.trim();
+      const menu = document.getElementById('firstMenu').value.trim();
       const comment = document.getElementById('firstComment').value.trim();
       const scoreEl = document.getElementById('firstScore');
       const score = parseFloat(scoreEl.value);
@@ -1018,11 +1026,11 @@
       data.push({
         id: Date.now(),
         category, region, name, author: raterName, link,
-        ratings: [{ id: Date.now() + 1, name: raterName, score: Math.round(score * 10) / 10, comment: comment || '' }]
+        ratings: [{ id: Date.now() + 1, name: raterName, score: Math.round(score * 10) / 10, menu: menu || '', comment: comment || '' }]
       });
 
       save();
-      ['restaurantName','authorName','naverLink','firstScore','firstComment'].forEach(id => document.getElementById(id).value = '');
+      ['restaurantName','authorName','naverLink','firstScore','firstMenu','firstComment'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('categorySelect').value = '';
       document.getElementById('regionSelect').value = '';
       document.getElementById('restaurantName').focus();
@@ -1031,16 +1039,18 @@
     function addRating(rid) {
       const ni = document.getElementById(`n-${rid}`);
       const si = document.getElementById(`s-${rid}`);
+      const mi = document.getElementById(`m-${rid}`);
       const ci = document.getElementById(`c-${rid}`);
       const name = ni.value.trim() || `익명${getNextAnonymousNum()}`;
       const score = parseFloat(si.value);
+      const menu = mi ? mi.value.trim() : '';
       const comment = ci ? ci.value.trim() : '';
 
       if (isNaN(score) || score < 0 || score > 10) return si.focus();
 
       const r = data.find(x => x.id === rid);
       if (!r) return;
-      r.ratings.push({ id: Date.now(), name, score: Math.round(score * 10) / 10, comment: comment || '' });
+      r.ratings.push({ id: Date.now(), name, score: Math.round(score * 10) / 10, menu: menu || '', comment: comment || '' });
       save();
       setTimeout(() => {
         const content = document.getElementById(`ratings-${rid}`);
@@ -1134,7 +1144,7 @@
           const rc = scoreColor(rt.score);
           return `<div class="rating-row">
             <div class="rating-left">
-              <span class="rating-person">${esc(rt.name)}</span>
+              <span class="rating-person">${esc(rt.name)}${rt.menu ? ` · ${esc(rt.menu)}` : ''}</span>
               ${rt.comment ? `<span class="rating-comment">${esc(rt.comment)}</span>` : ''}
             </div>
             <div class="rating-score-area">
@@ -1170,7 +1180,8 @@
               <div class="ratings">${rows}</div>
               <div class="add-rating">
                 <input class="name-input" type="text" id="n-${r.id}" placeholder="이름" onkeydown="if(event.key==='Enter')document.getElementById('s-${r.id}').focus()">
-                <input class="score-input" type="number" id="s-${r.id}" min="0" max="10" step="0.1" placeholder="0.0" onkeydown="if(event.key==='Enter')document.getElementById('c-${r.id}').focus()">
+                <input class="score-input" type="number" id="s-${r.id}" min="0" max="10" step="0.1" placeholder="0.0" onkeydown="if(event.key==='Enter')document.getElementById('m-${r.id}').focus()">
+                <input class="comment-input" type="text" id="m-${r.id}" placeholder="메뉴" onkeydown="if(event.key==='Enter')document.getElementById('c-${r.id}').focus()">
                 <input class="comment-input" type="text" id="c-${r.id}" placeholder="코멘트" onkeydown="if(event.key==='Enter')addRating(${r.id})">
                 <button class="add-rating-btn" onclick="addRating(${r.id})">추가</button>
               </div>
