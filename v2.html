@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>맛집지도</title>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #ffffff;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-tertiary: #aeaeb2;
+      --border: #d2d2d7;
+      --border-light: #e8e8ed;
+      --accent: #0071e3;
+      --accent-hover: #0077ed;
+      --green: #34c759;
+      --orange: #ff9500;
+      --red: #ff3b30;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .header {
+      padding: 80px 24px 48px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .header h1 {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .header p {
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: -0.2px;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* 식당 추가 */
+    .add-section {
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 0;
+    }
+
+    .add-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      margin-bottom: 20px;
+    }
+
+    .field-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .field-group.three-col {
+      grid-template-columns: 1fr 100px 1fr;
+    }
+
+    .field-group.single {
+      grid-template-columns: 1fr;
+    }
+
+    .field {
+      position: relative;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 12px 0;
+      border: none;
+      border-bottom: 1.5px solid var(--border-light);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      background: transparent;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .field input:focus {
+      border-bottom-color: var(--text-primary);
+    }
+
+    .field input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .field input:focus ~ label {
+      color: var(--text-primary);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      border: 1.5px solid var(--text-primary);
+      background: var(--text-primary);
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 8px;
+    }
+
+    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:active { transform: scale(0.98); }
+
+    /* 카드 */
+    .card {
+      position: relative;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .card-close {
+      position: absolute;
+      top: 28px;
+      right: 0;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      transition: color 0.15s;
+      line-height: 1;
+    }
+
+    .card-close:hover {
+      color: var(--text-primary);
+    }
+
+    .card.best {
+      border-left: 3px solid var(--accent);
+      padding-left: 20px;
+    }
+
+    /* 카드 헤더 */
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .card-info { flex: 1; min-width: 0; }
+
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-name {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      line-height: 1.3;
+    }
+
+    .score-badge {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .score-badge .num {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .score-badge .max {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+    }
+
+    .best-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .card-sub {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .score-green { color: var(--green); }
+    .score-orange { color: var(--orange); }
+    .score-red { color: var(--red); }
+
+    .card-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .card-link:hover { text-decoration: underline; }
+
+    /* 별점 시각화 */
+    .stars {
+      display: flex;
+      gap: 0;
+      margin: 12px 0 0;
+    }
+
+    .star {
+      position: relative;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .star svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 평가자 토글 */
+    .toggle-area {
+      margin-top: 14px;
+    }
+
+    .toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 4px 0;
+      transition: color 0.15s;
+    }
+
+    .toggle-btn:hover { color: var(--text-primary); }
+
+    .toggle-arrow {
+      display: inline-block;
+      font-size: 10px;
+      transition: transform 0.25s;
+    }
+
+    .toggle-arrow.open {
+      transform: rotate(90deg);
+    }
+
+    .toggle-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.25s ease;
+      opacity: 0;
+    }
+
+    .toggle-content.open {
+      opacity: 1;
+    }
+
+    /* 개별 평점 */
+    .ratings {
+      padding-top: 8px;
+    }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+
+    .rating-row + .rating-row {
+      border-top: 1px solid #f0f0f3;
+    }
+
+    .rating-person {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .rating-score-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mini-bar-wrap {
+      width: 80px;
+      height: 3px;
+      background: #f0f0f3;
+      overflow: hidden;
+    }
+
+    .mini-bar {
+      height: 100%;
+    }
+
+    .fill-green { background: var(--green); }
+    .fill-orange { background: var(--orange); }
+    .fill-red { background: var(--red); }
+
+    .rating-num {
+      font-size: 14px;
+      font-weight: 700;
+      min-width: 28px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 2px 6px;
+      transition: color 0.15s;
+      line-height: 1;
+    }
+
+    .delete-btn:hover {
+      color: var(--red);
+    }
+
+    /* 평점 추가 */
+    .add-rating {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-light);
+      margin-top: 12px;
+    }
+
+    .add-rating input {
+      padding: 10px 0;
+      border: none;
+      border-bottom: 1.5px solid var(--border-light);
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: transparent;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .add-rating input:focus { border-bottom-color: var(--text-primary); }
+    .add-rating input::placeholder { color: var(--text-tertiary); }
+    .add-rating .name-input { flex: 1; min-width: 0; }
+    .add-rating .score-input { width: 60px; text-align: center; }
+
+    .add-rating-btn {
+      padding: 8px 16px;
+      border: 1.5px solid var(--text-primary);
+      background: none;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .add-rating-btn:hover {
+      background: var(--text-primary);
+      color: #fff;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 64px 20px;
+      color: var(--text-tertiary);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 560px) {
+      .header { padding: 56px 20px 36px; }
+      .header h1 { font-size: 36px; }
+      .header p { font-size: 16px; }
+      .container { padding: 0 16px 60px; }
+      .field-group, .field-group.three-col { grid-template-columns: 1fr; }
+      .card-name { font-size: 18px; }
+      .score-badge .num { font-size: 18px; }
+      .mini-bar-wrap { display: none; }
+      .add-rating { flex-wrap: wrap; }
+      .add-rating .name-input { flex: 1 1 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>맛집지도</h1>
+    <p>10점 만점, 함께 만드는 평점 시스템</p>
+  </div>
+
+  <div class="container">
+    <div class="add-section">
+      <div class="add-section-title">새로운 식당 등록</div>
+      <div class="field-group three-col">
+        <div class="field">
+          <label>식당 이름</label>
+          <input type="text" id="restaurantName" placeholder="식당 이름">
+        </div>
+        <div class="field">
+          <label>별점</label>
+          <input type="number" id="firstScore" min="0" max="10" step="0.1" placeholder="0.0" onkeydown="if(event.key==='Enter')addRestaurant()">
+        </div>
+        <div class="field">
+          <label>작성자 (선택)</label>
+          <input type="text" id="authorName" placeholder="선택">
+        </div>
+      </div>
+      <div class="field-group single">
+        <div class="field">
+          <label>네이버 지도 링크 (선택)</label>
+          <input type="text" id="naverLink" placeholder="선택">
+        </div>
+      </div>
+      <button class="submit-btn" onclick="addRestaurant()">등록하기</button>
+    </div>
+
+    <div id="list"></div>
+  </div>
+
+  <script>
+    let data = JSON.parse(localStorage.getItem('restaurantRatings') || '[]');
+
+    function save() {
+      localStorage.setItem('restaurantRatings', JSON.stringify(data));
+    }
+
+    function avg(ratings) {
+      if (!ratings.length) return 0;
+      return ratings.reduce((s, r) => s + r.score, 0) / ratings.length;
+    }
+
+    function scoreColor(v) {
+      if (v >= 7) return 'green';
+      if (v >= 4) return 'orange';
+      return 'red';
+    }
+
+    function getNextAnonymousNum() {
+      let max = 0;
+      data.forEach(r => {
+        r.ratings.forEach(rt => {
+          const m = rt.name.match(/^익명(\d+)$/);
+          if (m) max = Math.max(max, parseInt(m[1]));
+        });
+      });
+      return max + 1;
+    }
+
+    function makeStars(score, color) {
+      const val = score / 2;
+      let html = '';
+      for (let i = 0; i < 5; i++) {
+        const diff = val - i;
+        let fill = 0;
+        if (diff >= 1) fill = 100;
+        else if (diff > 0) fill = Math.round(diff * 100);
+
+        const fillColor = '#ffb800';
+        const uid = `s${Date.now()}${i}${Math.random().toString(36).slice(2,6)}`;
+
+        html += `<span class="star"><svg viewBox="0 0 24 24">
+          <defs><linearGradient id="${uid}">
+            <stop offset="${fill}%" stop-color="${fillColor}"/>
+            <stop offset="${fill}%" stop-color="#e8e8ed"/>
+          </linearGradient></defs>
+          <path fill="url(#${uid})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg></span>`;
+      }
+      return html;
+    }
+
+    function esc(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    function toggleRatings(id) {
+      const content = document.getElementById(`ratings-${id}`);
+      const arrow = document.getElementById(`arrow-${id}`);
+      if (content.classList.contains('open')) {
+        content.classList.remove('open');
+        arrow.classList.remove('open');
+        content.style.maxHeight = '0';
+      } else {
+        content.classList.add('open');
+        arrow.classList.add('open');
+        content.style.maxHeight = content.scrollHeight + 'px';
+      }
+    }
+
+    function addRestaurant() {
+      const name = document.getElementById('restaurantName').value.trim();
+      const author = document.getElementById('authorName').value.trim();
+      const link = document.getElementById('naverLink').value.trim();
+      const scoreEl = document.getElementById('firstScore');
+      const score = parseFloat(scoreEl.value);
+
+      if (!name) return document.getElementById('restaurantName').focus();
+      if (isNaN(score) || score < 0 || score > 10) return scoreEl.focus();
+
+      const raterName = author || `익명${getNextAnonymousNum()}`;
+
+      data.push({
+        id: Date.now(),
+        name, author: raterName, link,
+        ratings: [{ id: Date.now() + 1, name: raterName, score: Math.round(score * 10) / 10 }]
+      });
+
+      save(); render();
+      ['restaurantName','authorName','naverLink','firstScore'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('restaurantName').focus();
+    }
+
+    function addRating(rid) {
+      const ni = document.getElementById(`n-${rid}`);
+      const si = document.getElementById(`s-${rid}`);
+      const name = ni.value.trim() || `익명${getNextAnonymousNum()}`;
+      const score = parseFloat(si.value);
+
+      if (isNaN(score) || score < 0 || score > 10) return si.focus();
+
+      const r = data.find(x => x.id === rid);
+      if (!r) return;
+      r.ratings.push({ id: Date.now(), name, score: Math.round(score * 10) / 10 });
+      save(); render();
+    }
+
+    function delRating(rid, ratId) {
+      const r = data.find(x => x.id === rid);
+      if (!r) return;
+      r.ratings = r.ratings.filter(x => x.id !== ratId);
+      save(); render();
+    }
+
+    function confirmDelete(id, name) {
+      if (confirm(`"${name}" 을(를) 삭제하시겠습니까?`)) {
+        data = data.filter(x => x.id !== id);
+        save(); render();
+      }
+    }
+
+    function render() {
+      const el = document.getElementById('list');
+
+      if (!data.length) {
+        el.innerHTML = '<div class="empty">아직 등록된 식당이 없습니다.<br>위에서 첫 번째 맛집을 등록해 보세요.</div>';
+        return;
+      }
+
+      el.innerHTML = data.map(r => {
+        const a = avg(r.ratings);
+        const c = scoreColor(a);
+        const isBest = r.ratings.length > 0 && a >= 8.5;
+
+        const rows = r.ratings.map(rt => {
+          const rc = scoreColor(rt.score);
+          return `<div class="rating-row">
+            <span class="rating-person">${esc(rt.name)}</span>
+            <div class="rating-score-area">
+              <div class="mini-bar-wrap"><div class="mini-bar fill-${rc}" style="width:${rt.score * 10}%"></div></div>
+              <span class="rating-num score-${rc}">${rt.score}</span>
+              <button class="delete-btn" onclick="delRating(${r.id},${rt.id})" title="삭제">&times;</button>
+            </div>
+          </div>`;
+        }).join('');
+
+        return `<div class="card ${isBest ? 'best' : ''}">
+          <button class="card-close" onclick="confirmDelete(${r.id},'${esc(r.name).replace(/'/g, "\\'")}')" title="삭제">&times;</button>
+          <div class="card-top">
+            <div class="card-info">
+              <div class="card-title-row">
+                <span class="card-name">${esc(r.name)}</span>
+                <div class="score-badge">
+                  <span class="num score-${c}">${r.ratings.length ? a.toFixed(1) : '—'}</span>
+                  <span class="max">/ 10</span>
+                </div>
+                ${isBest ? '<span class="best-tag">BEST</span>' : ''}
+              </div>
+              ${r.link ? `<div class="card-sub"><a class="card-link" href="${esc(r.link)}" target="_blank" rel="noopener">네이버 지도</a></div>` : ''}
+            </div>
+          </div>
+          <div class="stars">${r.ratings.length ? makeStars(a, c) : makeStars(0, 'red')}</div>
+          <div class="toggle-area">
+            <button class="toggle-btn" onclick="toggleRatings(${r.id})">
+              <span class="toggle-arrow" id="arrow-${r.id}">&#9654;</span>
+              평가 ${r.ratings.length}명
+            </button>
+            <div class="toggle-content" id="ratings-${r.id}">
+              <div class="ratings">${rows}</div>
+              <div class="add-rating">
+                <input class="name-input" type="text" id="n-${r.id}" placeholder="이름" onkeydown="if(event.key==='Enter')document.getElementById('s-${r.id}').focus()">
+                <input class="score-input" type="number" id="s-${r.id}" min="0" max="10" step="0.1" placeholder="0.0" onkeydown="if(event.key==='Enter')addRating(${r.id})">
+                <button class="add-rating-btn" onclick="addRating(${r.id})">추가</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    document.getElementById('restaurantName').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('authorName').focus(); });
+    document.getElementById('authorName').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('firstScore').focus(); });
+
+    render();
+  </script>
+</body>
+</html>
