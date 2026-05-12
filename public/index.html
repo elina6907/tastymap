@@ -874,29 +874,30 @@
       render();
     }
 
-    async function save() {
-      // 서버 최신 데이터를 가져와서 "새로 추가된 것만" 병합
+    function save() {
+      // 즉시 localStorage에 저장하고 render
+      localStorage.setItem('restaurantRatings', JSON.stringify(data));
+      render();
+      // 서버 병합 + 저장은 백그라운드로
+      syncToServer();
+    }
+
+    async function syncToServer() {
       try {
         const res = await fetch('/api/data');
         const serverData = await res.json();
 
-        // 로컬에 없는 식당(다른 사람이 추가한 것)만 가져옴
         const localIds = new Set(data.map(r => r.id));
         serverData.forEach(sr => {
-          if (!localIds.has(sr.id)) {
-            data.push(sr);
-          }
+          if (!localIds.has(sr.id)) data.push(sr);
         });
 
-        // 로컬에 있는 식당에 대해, 다른 사람이 추가한 rating만 병합
         data.forEach(local => {
           const server = serverData.find(s => s.id === local.id);
           if (server) {
             const localRatingIds = new Set(local.ratings.map(r => r.id));
             server.ratings.forEach(sr => {
-              if (!localRatingIds.has(sr.id)) {
-                local.ratings.push(sr);
-              }
+              if (!localRatingIds.has(sr.id)) local.ratings.push(sr);
             });
           }
         });
@@ -999,7 +1000,7 @@
       }
     }
 
-    async function addRestaurant() {
+    function addRestaurant() {
       const category = document.getElementById('categorySelect').value;
       const region = document.getElementById('regionSelect').value;
       const name = document.getElementById('restaurantName').value.trim();
@@ -1019,15 +1020,14 @@
         ratings: [{ id: Date.now() + 1, name: raterName, score: Math.round(score * 10) / 10, comment: comment || '' }]
       });
 
-      await save();
-      render();
+      save();
       ['restaurantName','authorName','naverLink','firstScore','firstComment'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('categorySelect').value = '';
       document.getElementById('regionSelect').value = '';
       document.getElementById('restaurantName').focus();
     }
 
-    async function addRating(rid) {
+    function addRating(rid) {
       const ni = document.getElementById(`n-${rid}`);
       const si = document.getElementById(`s-${rid}`);
       const ci = document.getElementById(`c-${rid}`);
@@ -1040,9 +1040,7 @@
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.ratings.push({ id: Date.now(), name, score: Math.round(score * 10) / 10, comment: comment || '' });
-      await save();
-      render();
-      // 입력값 초기화 (render 후 DOM 재생성되므로 토글 다시 열기)
+      save();
       setTimeout(() => {
         const content = document.getElementById(`ratings-${rid}`);
         const arrow = document.getElementById(`arrow-${rid}`);
@@ -1054,22 +1052,20 @@
       }, 50);
     }
 
-    async function delRating(rid, ratId) {
+    function delRating(rid, ratId) {
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.ratings = r.ratings.filter(x => x.id !== ratId);
-      await save();
-      render();
+      save();
     }
 
-    async function addLink(rid) {
+    function addLink(rid) {
       const link = prompt('네이버 지도 링크를 입력해 주세요.');
       if (!link || !link.trim()) return;
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.link = link.trim();
-      await save();
-      render();
+      save();
     }
 
     function showCategorySelect(rid) {
@@ -1077,13 +1073,12 @@
       if (el) el.style.display = el.style.display === 'none' ? 'inline-block' : 'none';
     }
 
-    async function setCategory(rid, value) {
+    function setCategory(rid, value) {
       if (!value) return;
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.category = value;
-      await save();
-      render();
+      save();
     }
 
     function showRegionSelect(rid) {
@@ -1091,13 +1086,12 @@
       if (el) el.style.display = el.style.display === 'none' ? 'inline-block' : 'none';
     }
 
-    async function setRegion(rid, value) {
+    function setRegion(rid, value) {
       if (!value) return;
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.region = value;
-      await save();
-      render();
+      save();
     }
 
     function toggleEdit(rid) {
@@ -1105,22 +1099,20 @@
       if (el) el.classList.toggle('open');
     }
 
-    async function saveEdit(rid) {
+    function saveEdit(rid) {
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.name = document.getElementById(`edit-name-${rid}`).value.trim() || r.name;
       r.category = document.getElementById(`edit-category-${rid}`).value;
       r.region = document.getElementById(`edit-region-${rid}`).value;
       r.link = document.getElementById(`edit-link-${rid}`).value.trim();
-      await save();
-      render();
+      save();
     }
 
-    async function confirmDelete(id, name) {
+    function confirmDelete(id, name) {
       if (confirm(`"${name}" 을(를) 삭제하시겠습니까?`)) {
         data = data.filter(x => x.id !== id);
-        await save();
-        render();
+        save();
       }
     }
 
