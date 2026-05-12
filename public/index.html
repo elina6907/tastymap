@@ -233,28 +233,69 @@
       transition: box-shadow 0.3s, border-color 0.3s;
     }
 
-    .card-close {
+    .card-edit-btn {
       position: absolute;
       top: 14px;
       right: 14px;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 4px 12px;
       background: none;
-      border: none;
-      border-radius: 50%;
-      font-size: 22px;
-      color: var(--text-tertiary);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
       cursor: pointer;
-      transition: color 0.15s, background 0.15s;
-      line-height: 1;
+      transition: all 0.15s;
     }
 
-    .card-close:hover {
+    .card-edit-btn:hover {
+      border-color: var(--text-secondary);
       color: var(--text-primary);
-      background: #f0f0f3;
+    }
+
+    .card-edit-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .card-delete-btn {
+      padding: 8px 16px;
+      border: 1.5px solid var(--red);
+      border-radius: 10px;
+      background: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--red);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .card-delete-btn:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .card-cancel-btn {
+      padding: 8px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .card-cancel-btn:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
     }
 
     .card:hover {
@@ -557,9 +598,17 @@
       display: flex;
       gap: 8px;
       margin-bottom: 20px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .sort-bar::-webkit-scrollbar {
+      display: none;
     }
 
     .sort-btn {
+      flex-shrink: 0;
       padding: 6px 14px;
       border: 1.5px solid var(--border);
       border-radius: 100px;
@@ -984,6 +1033,11 @@
       render();
     }
 
+    function toggleEdit(rid) {
+      const el = document.getElementById(`edit-actions-${rid}`);
+      if (el) el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+    }
+
     async function confirmDelete(id, name) {
       if (confirm(`"${name}" 을(를) 삭제하시겠습니까?`)) {
         data = data.filter(x => x.id !== id);
@@ -1021,7 +1075,7 @@
         }).join('');
 
         return `<div class="card ${isBest ? 'best' : ''}">
-          <button class="card-close" onclick="confirmDelete(${r.id},'${esc(r.name).replace(/'/g, "\\'")}')" title="삭제">&times;</button>
+          <button class="card-edit-btn" onclick="toggleEdit(${r.id})">수정</button>
           <div class="card-top">
             <div class="card-info">
               <div class="card-title-row">
@@ -1050,6 +1104,10 @@
                 <button class="add-rating-btn" onclick="addRating(${r.id})">추가</button>
               </div>
             </div>
+          </div>
+          <div class="card-edit-actions" id="edit-actions-${r.id}" style="display:none">
+            <button class="card-delete-btn" onclick="confirmDelete(${r.id},'${esc(r.name).replace(/'/g, "\\'")}')">식당 삭제</button>
+            <button class="card-cancel-btn" onclick="toggleEdit(${r.id})">취소</button>
           </div>
         </div>`;
       }).join('');
