@@ -795,6 +795,15 @@
       save(); render();
     }
 
+    function addRegion(rid) {
+      const region = prompt('지역을 입력해 주세요. (예: 잠실, 강남, 홍대)');
+      if (!region || !region.trim()) return;
+      const r = data.find(x => x.id === rid);
+      if (!r) return;
+      r.region = region.trim();
+      save(); render();
+    }
+
     function confirmDelete(id, name) {
       if (confirm(`"${name}" 을(를) 삭제하시겠습니까?`)) {
         data = data.filter(x => x.id !== id);
@@ -835,7 +844,7 @@
           <div class="card-top">
             <div class="card-info">
               <div class="card-title-row">
-                ${r.region ? `<span class="region-tag">${esc(r.region)}</span>` : ''}<span class="card-name">${esc(r.name)}</span>
+                ${r.region ? `<span class="region-tag">${esc(r.region)}</span>` : `<button class="add-link-btn" onclick="addRegion(${r.id})">+ 지역</button>`}<span class="card-name">${esc(r.name)}</span>
                 <div class="score-badge">
                   <span class="num score-${c}">${r.ratings.length ? a.toFixed(1) : '—'}</span>
                   <span class="max">/ 10</span>
