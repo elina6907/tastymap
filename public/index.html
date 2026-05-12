@@ -665,38 +665,50 @@
     let data = [];
 
     async function loadData() {
+      const localData = JSON.parse(localStorage.getItem('restaurantRatings') || '[]');
       try {
         const res = await fetch('/api/data');
         data = await res.json();
+        // localStorage에만 있는 항목도 병합 (오프라인 추가분)
+        const serverIds = new Set(data.map(r => r.id));
+        localData.forEach(lr => {
+          if (!serverIds.has(lr.id)) data.push(lr);
+        });
       } catch (e) {
-        data = JSON.parse(localStorage.getItem('restaurantRatings') || '[]');
+        data = localData;
       }
+      localStorage.setItem('restaurantRatings', JSON.stringify(data));
       render();
     }
 
     async function save() {
-      // 서버 최신 데이터와 병합 후 저장
+      // 서버 최신 데이터를 가져와서 "새로 추가된 것만" 병합
       try {
         const res = await fetch('/api/data');
         const serverData = await res.json();
-        // 서버에만 있는 항목 병합
+
+        // 로컬에 없는 식당(다른 사람이 추가한 것)만 가져옴
         const localIds = new Set(data.map(r => r.id));
-        serverData.forEach(r => {
-          if (!localIds.has(r.id)) data.push(r);
+        serverData.forEach(sr => {
+          if (!localIds.has(sr.id)) {
+            data.push(sr);
+          }
         });
-        // 서버에 있는 항목의 ratings도 병합
+
+        // 로컬에 있는 식당에 대해, 다른 사람이 추가한 rating만 병합
         data.forEach(local => {
           const server = serverData.find(s => s.id === local.id);
           if (server) {
             const localRatingIds = new Set(local.ratings.map(r => r.id));
-            server.ratings.forEach(r => {
-              if (!localRatingIds.has(r.id)) local.ratings.push(r);
+            server.ratings.forEach(sr => {
+              if (!localRatingIds.has(sr.id)) {
+                local.ratings.push(sr);
+              }
             });
-            if (!local.region && server.region) local.region = server.region;
-            if (!local.link && server.link) local.link = server.link;
           }
         });
       } catch (e) {}
+
       localStorage.setItem('restaurantRatings', JSON.stringify(data));
       try {
         await fetch('/api/data', {
@@ -793,13 +805,14 @@
         ratings: [{ id: Date.now() + 1, name: raterName, score: Math.round(score * 10) / 10, comment: comment || '' }]
       });
 
-      save(); render();
+      await save();
+      render();
       ['restaurantName','authorName','naverLink','firstScore','firstComment'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('regionSelect').value = '';
       document.getElementById('restaurantName').focus();
     }
 
-    function addRating(rid) {
+    async function addRating(rid) {
       const ni = document.getElementById(`n-${rid}`);
       const si = document.getElementById(`s-${rid}`);
       const ci = document.getElementById(`c-${rid}`);
@@ -812,23 +825,36 @@
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.ratings.push({ id: Date.now(), name, score: Math.round(score * 10) / 10, comment: comment || '' });
-      save(); render();
+      await save();
+      render();
+      // 입력값 초기화 (render 후 DOM 재생성되므로 토글 다시 열기)
+      setTimeout(() => {
+        const content = document.getElementById(`ratings-${rid}`);
+        const arrow = document.getElementById(`arrow-${rid}`);
+        if (content && !content.classList.contains('open')) {
+          content.classList.add('open');
+          arrow.classList.add('open');
+          content.style.maxHeight = content.scrollHeight + 'px';
+        }
+      }, 50);
     }
 
-    function delRating(rid, ratId) {
+    async function delRating(rid, ratId) {
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.ratings = r.ratings.filter(x => x.id !== ratId);
-      save(); render();
+      await save();
+      render();
     }
 
-    function addLink(rid) {
+    async function addLink(rid) {
       const link = prompt('네이버 지도 링크를 입력해 주세요.');
       if (!link || !link.trim()) return;
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.link = link.trim();
-      save(); render();
+      await save();
+      render();
     }
 
     function showRegionSelect(rid) {
@@ -836,18 +862,20 @@
       if (el) el.style.display = el.style.display === 'none' ? 'inline-block' : 'none';
     }
 
-    function setRegion(rid, value) {
+    async function setRegion(rid, value) {
       if (!value) return;
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.region = value;
-      save(); render();
+      await save();
+      render();
     }
 
-    function confirmDelete(id, name) {
+    async function confirmDelete(id, name) {
       if (confirm(`"${name}" 을(를) 삭제하시겠습니까?`)) {
         data = data.filter(x => x.id !== id);
-        save(); render();
+        await save();
+        render();
       }
     }
 
