@@ -86,6 +86,10 @@
       grid-template-columns: 1fr 100px 1fr;
     }
 
+    .field-group.two-col {
+      grid-template-columns: 1fr 1fr;
+    }
+
     .field-group.single {
       grid-template-columns: 1fr;
     }
@@ -129,8 +133,45 @@
       pointer-events: none;
     }
 
-    .field input:focus + label {
+    .field select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      background: var(--bg);
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aeaeb2' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .field select:focus {
+      border-color: var(--accent);
+    }
+
+    .field input:focus + label,
+    .field select:focus + label {
       color: var(--accent);
+    }
+
+    .region-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #f0f0f3;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      margin-right: 6px;
+      vertical-align: middle;
     }
 
     .submit-btn {
@@ -198,7 +239,6 @@
     .card-top {
       display: flex;
       align-items: flex-start;
-      justify-content: space-between;
       gap: 16px;
     }
 
@@ -476,13 +516,14 @@
       line-height: 1.6;
     }
 
+
     @media (max-width: 560px) {
       .header { padding: 56px 20px 36px; }
       .header h1 { font-size: 36px; }
       .header p { font-size: 16px; }
       .container { padding: 0 16px 60px; }
       .add-section, .card { padding: 24px 20px; }
-      .field-group, .field-group.three-col { grid-template-columns: 1fr; }
+      .field-group, .field-group.three-col, .field-group.two-col { grid-template-columns: 1fr; }
       .card-name { font-size: 18px; }
       .score-badge .num { font-size: 18px; }
       .mini-bar-wrap { display: none; }
@@ -515,7 +556,79 @@
           <label>작성자 (선택)</label>
         </div>
       </div>
-      <div class="field-group single">
+      <div class="field-group two-col">
+        <div class="field">
+          <select id="regionSelect">
+            <option value="">선택</option>
+            <optgroup label="자주 찾는">
+              <option value="송파">송파</option>
+              <option value="강동">강동</option>
+            </optgroup>
+            <optgroup label="서울">
+              <option value="강남">강남</option>
+              <option value="강동">강동</option>
+              <option value="강북">강북</option>
+              <option value="강서">강서</option>
+              <option value="관악">관악</option>
+              <option value="광진">광진</option>
+              <option value="구로">구로</option>
+              <option value="금천">금천</option>
+              <option value="노원">노원</option>
+              <option value="도봉">도봉</option>
+              <option value="동대문">동대문</option>
+              <option value="동작">동작</option>
+              <option value="마포">마포</option>
+              <option value="서대문">서대문</option>
+              <option value="서초">서초</option>
+              <option value="성동">성동</option>
+              <option value="성북">성북</option>
+              <option value="송파">송파</option>
+              <option value="양천">양천</option>
+              <option value="영등포">영등포</option>
+              <option value="용산">용산</option>
+              <option value="은평">은평</option>
+              <option value="종로">종로</option>
+              <option value="중구">중구</option>
+              <option value="중랑">중랑</option>
+              <option value="잠실">잠실</option>
+              <option value="건대">건대</option>
+              <option value="홍대">홍대</option>
+              <option value="이태원">이태원</option>
+              <option value="압구정">압구정</option>
+              <option value="신촌">신촌</option>
+              <option value="여의도">여의도</option>
+            </optgroup>
+            <optgroup label="수도권">
+              <option value="성남">성남</option>
+              <option value="분당">분당</option>
+              <option value="수원">수원</option>
+              <option value="인천">인천</option>
+              <option value="고양">고양</option>
+              <option value="용인">용인</option>
+              <option value="부천">부천</option>
+              <option value="안양">안양</option>
+              <option value="파주">파주</option>
+              <option value="김포">김포</option>
+              <option value="하남">하남</option>
+            </optgroup>
+            <optgroup label="지방">
+              <option value="부산">부산</option>
+              <option value="대구">대구</option>
+              <option value="대전">대전</option>
+              <option value="광주">광주</option>
+              <option value="울산">울산</option>
+              <option value="세종">세종</option>
+              <option value="제주">제주</option>
+              <option value="춘천">춘천</option>
+              <option value="강릉">강릉</option>
+              <option value="전주">전주</option>
+              <option value="경주">경주</option>
+              <option value="여수">여수</option>
+              <option value="속초">속초</option>
+            </optgroup>
+          </select>
+          <label>지역 (선택)</label>
+        </div>
         <div class="field">
           <input type="text" id="naverLink" placeholder="선택">
           <label>네이버 지도 링크 (선택)</label>
@@ -531,13 +644,33 @@
     </div>
 
     <div id="list"></div>
+
   </div>
 
   <script>
-    let data = JSON.parse(localStorage.getItem('restaurantRatings') || '[]');
+    let data = [];
 
-    function save() {
+    async function loadData() {
+      try {
+        const res = await fetch('/api/data');
+        data = await res.json();
+      } catch (e) {
+        data = JSON.parse(localStorage.getItem('restaurantRatings') || '[]');
+      }
+      render();
+    }
+
+    async function save() {
       localStorage.setItem('restaurantRatings', JSON.stringify(data));
+      try {
+        await fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+      } catch (e) {
+        console.error('서버 저장 실패, localStorage에만 저장됨', e);
+      }
     }
 
     function avg(ratings) {
@@ -605,7 +738,8 @@
       }
     }
 
-    function addRestaurant() {
+    async function addRestaurant() {
+      const region = document.getElementById('regionSelect').value;
       const name = document.getElementById('restaurantName').value.trim();
       const author = document.getElementById('authorName').value.trim();
       const link = document.getElementById('naverLink').value.trim();
@@ -617,15 +751,15 @@
       if (isNaN(score) || score < 0 || score > 10) return scoreEl.focus();
 
       const raterName = author || `익명${getNextAnonymousNum()}`;
-
       data.push({
         id: Date.now(),
-        name, author: raterName, link,
+        region, name, author: raterName, link,
         ratings: [{ id: Date.now() + 1, name: raterName, score: Math.round(score * 10) / 10, comment: comment || '' }]
       });
 
       save(); render();
       ['restaurantName','authorName','naverLink','firstScore','firstComment'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('regionSelect').value = '';
       document.getElementById('restaurantName').focus();
     }
 
@@ -701,12 +835,12 @@
           <div class="card-top">
             <div class="card-info">
               <div class="card-title-row">
-                <span class="card-name">${esc(r.name)}</span>
+                ${r.region ? `<span class="region-tag">${esc(r.region)}</span>` : ''}<span class="card-name">${esc(r.name)}</span>
                 <div class="score-badge">
                   <span class="num score-${c}">${r.ratings.length ? a.toFixed(1) : '—'}</span>
                   <span class="max">/ 10</span>
                 </div>
-                ${isBest ? '<span class="best-tag">BEST</span>' : ''}
+                ${isBest ? '<span class="best-tag">HIGH RANK</span>' : ''}
               </div>
               <div class="card-sub">${r.link ? `<a class="card-link" href="${esc(r.link)}" target="_blank" rel="noopener">네이버 지도</a>` : `<button class="add-link-btn" onclick="addLink(${r.id})">+ 지도 링크 추가</button>`}</div>
             </div>
@@ -734,7 +868,7 @@
     document.getElementById('restaurantName').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('authorName').focus(); });
     document.getElementById('authorName').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('firstScore').focus(); });
 
-    render();
+    loadData();
   </script>
 </body>
 </html>
