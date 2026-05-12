@@ -675,6 +675,28 @@
     }
 
     async function save() {
+      // 서버 최신 데이터와 병합 후 저장
+      try {
+        const res = await fetch('/api/data');
+        const serverData = await res.json();
+        // 서버에만 있는 항목 병합
+        const localIds = new Set(data.map(r => r.id));
+        serverData.forEach(r => {
+          if (!localIds.has(r.id)) data.push(r);
+        });
+        // 서버에 있는 항목의 ratings도 병합
+        data.forEach(local => {
+          const server = serverData.find(s => s.id === local.id);
+          if (server) {
+            const localRatingIds = new Set(local.ratings.map(r => r.id));
+            server.ratings.forEach(r => {
+              if (!localRatingIds.has(r.id)) local.ratings.push(r);
+            });
+            if (!local.region && server.region) local.region = server.region;
+            if (!local.link && server.link) local.link = server.link;
+          }
+        });
+      } catch (e) {}
       localStorage.setItem('restaurantRatings', JSON.stringify(data));
       try {
         await fetch('/api/data', {
