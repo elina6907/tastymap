@@ -461,6 +461,24 @@
 
     .add-link-btn {
       background: none;
+      border: 1.5px dashed var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      padding: 2px 8px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .add-link-btn:hover {
+      color: var(--text-secondary);
+      border-color: var(--text-secondary);
+    }
+
+    .add-link-text {
+      background: none;
       border: none;
       font-family: inherit;
       font-size: 13px;
@@ -470,6 +488,8 @@
       padding: 0;
       transition: color 0.15s;
     }
+
+    .add-link-text:hover { color: var(--accent); }
 
     .add-link-btn:hover { color: var(--accent); }
 
@@ -1216,7 +1236,7 @@
                   <span class="max">/ 10</span>
                 </div>
               </div>
-              <div class="card-sub">${r.link ? `<a class="card-link" href="${esc(r.link)}" target="_blank" rel="noopener">네이버 지도</a>` : `<button class="add-link-btn" onclick="addLink(${r.id})">+ 지도 링크 추가</button>`}</div>
+              <div class="card-sub">${r.link ? `<a class="card-link" href="${esc(r.link)}" target="_blank" rel="noopener">네이버 지도</a>` : `<button class="add-link-text" onclick="addLink(${r.id})">+ 지도 링크 추가</button>`}</div>
             </div>
           </div>
           <div class="stars">${r.ratings.length ? makeStars(a, c) : makeStars(0, 'red')}</div>
