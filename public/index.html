@@ -882,26 +882,13 @@
       render();
     }
 
-    function save(skipMerge) {
+    let deletedIds = new Set();
+    let deletedRatingIds = new Set();
+
+    function save() {
       localStorage.setItem('restaurantRatings', JSON.stringify(data));
       render();
-      if (skipMerge) {
-        pushToServer();
-      } else {
-        syncToServer();
-      }
-    }
-
-    async function pushToServer() {
-      try {
-        await fetch('/api/data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-      } catch (e) {
-        console.error('서버 저장 실패', e);
-      }
+      syncToServer();
     }
 
     async function syncToServer() {
@@ -909,24 +896,41 @@
         const res = await fetch('/api/data');
         const serverData = await res.json();
 
+        // 서버에만 있는 식당 추가 (단, 삭제한 건 제외)
         const localIds = new Set(data.map(r => r.id));
         serverData.forEach(sr => {
-          if (!localIds.has(sr.id)) data.push(sr);
+          if (!localIds.has(sr.id) && !deletedIds.has(sr.id)) {
+            data.push(sr);
+          }
         });
 
+        // 서버에만 있는 rating 추가 (단, 삭제한 건 제외)
         data.forEach(local => {
           const server = serverData.find(s => s.id === local.id);
           if (server) {
             const localRatingIds = new Set(local.ratings.map(r => r.id));
             server.ratings.forEach(sr => {
-              if (!localRatingIds.has(sr.id)) local.ratings.push(sr);
+              if (!localRatingIds.has(sr.id) && !deletedRatingIds.has(sr.id)) {
+                local.ratings.push(sr);
+              }
             });
           }
         });
       } catch (e) {}
 
       localStorage.setItem('restaurantRatings', JSON.stringify(data));
-      pushToServer();
+      try {
+        await fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        // 서버 반영 완료 후 삭제 기록 초기화
+        deletedIds.clear();
+        deletedRatingIds.clear();
+      } catch (e) {
+        console.error('서버 저장 실패', e);
+      }
     }
 
     function setSort(type) {
@@ -1072,8 +1076,9 @@
     function delRating(rid, ratId) {
       const r = data.find(x => x.id === rid);
       if (!r) return;
+      deletedRatingIds.add(ratId);
       r.ratings = r.ratings.filter(x => x.id !== ratId);
-      save(true);
+      save();
     }
 
     function addLink(rid) {
@@ -1128,8 +1133,9 @@
 
     function confirmDelete(id, name) {
       if (confirm(`"${name}" 을(를) 삭제하시겠습니까?`)) {
+        deletedIds.add(id);
         data = data.filter(x => x.id !== id);
-        save(true);
+        save();
       }
     }
 
