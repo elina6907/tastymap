@@ -882,12 +882,26 @@
       render();
     }
 
-    function save() {
-      // 즉시 localStorage에 저장하고 render
+    function save(skipMerge) {
       localStorage.setItem('restaurantRatings', JSON.stringify(data));
       render();
-      // 서버 병합 + 저장은 백그라운드로
-      syncToServer();
+      if (skipMerge) {
+        pushToServer();
+      } else {
+        syncToServer();
+      }
+    }
+
+    async function pushToServer() {
+      try {
+        await fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+      } catch (e) {
+        console.error('서버 저장 실패', e);
+      }
     }
 
     async function syncToServer() {
@@ -912,15 +926,7 @@
       } catch (e) {}
 
       localStorage.setItem('restaurantRatings', JSON.stringify(data));
-      try {
-        await fetch('/api/data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-      } catch (e) {
-        console.error('서버 저장 실패, localStorage에만 저장됨', e);
-      }
+      pushToServer();
     }
 
     function setSort(type) {
@@ -1067,7 +1073,7 @@
       const r = data.find(x => x.id === rid);
       if (!r) return;
       r.ratings = r.ratings.filter(x => x.id !== ratId);
-      save();
+      save(true);
     }
 
     function addLink(rid) {
@@ -1123,7 +1129,7 @@
     function confirmDelete(id, name) {
       if (confirm(`"${name}" 을(를) 삭제하시겠습니까?`)) {
         data = data.filter(x => x.id !== id);
-        save();
+        save(true);
       }
     }
 
