@@ -571,6 +571,7 @@
       color: var(--text-secondary);
     }
 
+    .score-blue { color: #3478f6; }
     .score-green { color: var(--green); }
     .score-orange { color: var(--orange); }
     .score-red { color: var(--red); }
@@ -1161,6 +1162,7 @@
     }
 
     function scoreColor(v) {
+      if (v >= 8.8) return 'blue';
       if (v >= 7) return 'green';
       if (v >= 4) return 'orange';
       return 'red';
