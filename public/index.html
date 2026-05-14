@@ -38,6 +38,15 @@
       text-align: center;
     }
 
+    @media (min-width: 960px) {
+      .header {
+        text-align: left;
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 60px 24px 36px;
+      }
+    }
+
     .header h1 {
       font-size: 48px;
       font-weight: 700;
@@ -68,10 +77,20 @@
       }
 
       .sidebar {
-        width: 340px;
+        width: 400px;
         flex-shrink: 0;
         position: sticky;
         top: 24px;
+      }
+
+      .sidebar .field-group.row-main,
+      .sidebar .field-group.row-detail,
+      .sidebar .field-group.row-links-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar .field-group.row-main {
+        grid-template-columns: 1fr 100px;
       }
 
       .main-content {
@@ -768,6 +787,14 @@
       display: none;
     }
 
+    .sort-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      margin-right: 4px;
+    }
+
     .sort-btn {
       flex-shrink: 0;
       padding: 6px 14px;
@@ -941,6 +968,7 @@
 
     <div class="main-content">
     <div class="sort-bar">
+      <span class="sort-label">정렬</span>
       <button class="sort-btn active" data-sort="recent" onclick="setSort('recent')">최신순</button>
       <button class="sort-btn" data-sort="name" onclick="setSort('name')">ㄱㄴㄷ순</button>
       <button class="sort-btn" data-sort="score-desc" onclick="setSort('score-desc')">점수 높은순</button>
