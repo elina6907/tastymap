@@ -1395,13 +1395,13 @@
               <div class="card-title-row">
                 <span class="card-name">${esc(r.name)}</span>
                 <div class="score-badge">
+                  <svg style="width:16px;height:16px;vertical-align:middle;margin-right:1px" viewBox="0 0 24 24"><path fill="#ffb800" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                   <span class="num score-${c}">${r.ratings.length ? a.toFixed(1) : '—'}</span>
                   <span class="max">/ 10</span>
                 </div>
               </div>
             </div>
           </div>
-          <div class="stars">${r.ratings.length ? makeStars(a, c) : makeStars(0, 'red')}</div>
           <div class="toggle-area">
             <button class="toggle-btn" onclick="event.stopPropagation();toggleRatings(${r.id})">
               <span class="toggle-arrow" id="arrow-${r.id}">&#9654;</span>
