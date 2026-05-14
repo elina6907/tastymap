@@ -1182,7 +1182,7 @@
           const rc = scoreColor(rt.score);
           return `<div class="rating-row">
             <div class="rating-left">
-              <span class="rating-person">${esc(rt.name)}${rt.menu ? ` <svg style="display:inline-block;vertical-align:middle;margin:0 6px" width="1" height="8"><line x1="0" y1="0" x2="0" y2="8" stroke="#aeaeb2" stroke-width="1.5"/></svg> 먹은 메뉴: ${esc(rt.menu)}` : ''}</span>
+              <span class="rating-person">${esc(rt.name)}${rt.menu ? ` <svg style="display:inline-block;vertical-align:middle;margin:0 6px" width="1" height="8"><line x1="0" y1="0" x2="0" y2="8" stroke="#aeaeb2" stroke-width="1.5"/></svg><span style="font-size:11px;font-weight:400;color:var(--text-secondary)">먹은 메뉴: ${esc(rt.menu)}</span>` : ''}</span>
               ${rt.comment ? `<span class="rating-comment">${esc(rt.comment)}</span>` : ''}
             </div>
             <div class="rating-score-area">
