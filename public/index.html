@@ -1332,7 +1332,7 @@
           </div>
           <div class="stars">${r.ratings.length ? makeStars(a, c) : makeStars(0, 'red')}</div>
           <div class="toggle-area">
-            <button class="toggle-btn" onclick="toggleRatings(${r.id})">
+            <button class="toggle-btn" onclick="event.stopPropagation();toggleRatings(${r.id})">
               <span class="toggle-arrow" id="arrow-${r.id}">&#9654;</span>
               평가 ${r.ratings.length}명 · 나도 별점 남기기
             </button>
