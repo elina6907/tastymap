@@ -1181,7 +1181,7 @@
           const rc = scoreColor(rt.score);
           return `<div class="rating-row">
             <div class="rating-left">
-              <span class="rating-person">${esc(rt.name)}${rt.menu ? ` · ${esc(rt.menu)}` : ''}</span>
+              <span class="rating-person">${esc(rt.name)}${rt.menu ? ` (먹은 메뉴: ${esc(rt.menu)})` : ''}</span>
               ${rt.comment ? `<span class="rating-comment">${esc(rt.comment)}</span>` : ''}
             </div>
             <div class="rating-score-area">
