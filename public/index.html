@@ -247,10 +247,40 @@
       transition: box-shadow 0.3s, border-color 0.3s;
     }
 
-    .card-edit-btn {
+    .card-top-actions {
       position: absolute;
-      top: 30px;
+      top: 24px;
       right: 28px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .map-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .map-btn svg {
+      flex-shrink: 0;
+    }
+
+    .map-btn:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .card-edit-btn {
       padding: 4px 12px;
       background: none;
       border: 1.5px solid var(--border);
@@ -261,6 +291,7 @@
       color: var(--text-secondary);
       cursor: pointer;
       transition: all 0.15s;
+      flex-shrink: 0;
     }
 
     .card-edit-btn:hover {
@@ -1223,7 +1254,10 @@
         }).join('');
 
         return `<div class="card ${isBest ? 'best' : ''}">
-          <button class="card-edit-btn" onclick="toggleEdit(${r.id})">수정</button>
+          <div class="card-top-actions">
+            ${r.link ? `<a class="map-btn" href="${esc(r.link)}" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>네이버 지도</a>` : ''}
+            <button class="card-edit-btn" onclick="toggleEdit(${r.id})">수정</button>
+          </div>
           <div class="card-top">
             <div class="card-info">
               <div class="card-tags-row">
@@ -1236,7 +1270,6 @@
                   <span class="max">/ 10</span>
                 </div>
               </div>
-              <div class="card-sub">${r.link ? `<a class="card-link" href="${esc(r.link)}" target="_blank" rel="noopener">네이버 지도</a>` : `<button class="add-link-text" onclick="addLink(${r.id})">+ 지도 링크 추가</button>`}</div>
             </div>
           </div>
           <div class="stars">${r.ratings.length ? makeStars(a, c) : makeStars(0, 'red')}</div>
