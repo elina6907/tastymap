@@ -777,6 +777,7 @@
     .sort-bar {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       gap: 8px;
       margin-bottom: 20px;
       overflow-x: auto;
@@ -969,7 +970,6 @@
 
     <div class="main-content">
     <div class="sort-bar">
-      <span class="sort-label">정렬</span>
       <button class="sort-btn active" data-sort="score-desc" onclick="setSort('score-desc')">점수 높은순</button>
       <button class="sort-btn" data-sort="recent" onclick="setSort('recent')">최신순</button>
       <button class="sort-btn" data-sort="name" onclick="setSort('name')">ㄱㄴㄷ순</button>
