@@ -1186,8 +1186,8 @@
               ${rt.comment ? `<span class="rating-comment"><svg style="display:inline-block;vertical-align:middle;margin-right:4px" width="10" height="10" viewBox="0 0 10 10"><path d="M2 1v5h6" fill="none" stroke="#aeaeb2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>${esc(rt.comment)}</span>` : ''}
             </div>
             <div class="rating-score-area">
-              <div class="mini-bar-wrap"><div class="mini-bar fill-${rc}" style="width:${rt.score * 10}%"></div></div>
-              <span class="rating-num score-${rc}">${rt.score}</span>
+              <svg style="width:14px;height:14px;vertical-align:middle" viewBox="0 0 24 24"><path fill="#ffb800" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span class="rating-num">${rt.score}</span>
               <button class="delete-btn" onclick="delRating(${r.id},${rt.id})" title="삭제">&times;</button>
             </div>
           </div>`;
