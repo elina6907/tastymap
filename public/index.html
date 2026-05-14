@@ -1093,6 +1093,15 @@
       localStorage.setItem('restaurantRatings', JSON.stringify(data));
       render();
       await directSave();
+      setTimeout(() => {
+        const content = document.getElementById(`ratings-${rid}`);
+        const arrow = document.getElementById(`arrow-${rid}`);
+        if (content) {
+          content.classList.add('open');
+          arrow.classList.add('open');
+          content.style.maxHeight = content.scrollHeight + 'px';
+        }
+      }, 50);
     }
 
     function addLink(rid) {
