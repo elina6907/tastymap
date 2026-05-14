@@ -38,12 +38,32 @@
       text-align: center;
     }
 
+    .header-inner {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .header-right {
+      display: none;
+    }
+
     @media (min-width: 960px) {
       .header {
         text-align: left;
         max-width: 1080px;
         margin: 0 auto;
         padding: 60px 24px 36px;
+      }
+
+      .header-right {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .main-content .sort-bar {
+        display: none;
       }
     }
 
@@ -862,28 +882,45 @@
 
 
     @media (max-width: 560px) {
-      .header { padding: 56px 20px 36px; }
-      .header h1 { font-size: 36px; }
-      .header p { font-size: 16px; }
+      .header { padding: 40px 20px 24px; }
+      .header-inner { flex-direction: column; align-items: flex-start; }
+      .header h1 { font-size: 32px; }
+      .header p { font-size: 14px; }
       .layout { padding: 0 16px 60px; }
-      .add-section { padding: 24px 20px; margin-bottom: 32px; }
-      .card { padding: 24px 20px; }
+      .add-section { padding: 20px 16px; margin-bottom: 24px; }
+      .card { padding: 20px 16px; }
       .field-group, .field-group.three-col, .field-group.two-col, .field-group.row-main, .field-group.row-detail, .field-group.row-links, .field-group.row-links-3 { grid-template-columns: 1fr; }
       .field-group.row-main { grid-template-columns: 1fr 80px; }
-      .sort-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
-      .card-name { font-size: 18px; }
-      .score-badge .num { font-size: 18px; }
+      .sort-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; margin-bottom: 16px; }
+      .card-name { font-size: 17px; }
+      .score-badge .num { font-size: 17px; }
       .mini-bar-wrap { display: none; }
       .add-rating { flex-wrap: wrap; }
       .add-rating .name-input { flex: 1 1 100%; }
+      .card-top-actions { top: 12px; right: 12px; gap: 4px; }
+      .card-top-actions .map-btn { font-size: 11px; padding: 3px 8px; }
+      .card-top-actions .card-edit-btn { font-size: 11px; padding: 3px 8px; }
+      .card-top { padding-right: 0; }
+      .card-tags-row { max-width: calc(100% - 120px); flex-wrap: wrap; }
+      .info-banner { margin-top: 8px; }
     }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <h1>맛집지도</h1>
-    <p>직원들이 함께 만드는 맛집 지도</p>
+    <div class="header-inner">
+      <div class="header-left">
+        <h1>맛집지도</h1>
+        <p>직원들이 함께 만드는 맛집 지도</p>
+      </div>
+      <div class="header-right">
+        <button class="sort-btn active" data-sort="score-desc" onclick="setSort('score-desc')">점수 높은순</button>
+        <button class="sort-btn" data-sort="recent" onclick="setSort('recent')">최신순</button>
+        <button class="sort-btn" data-sort="name" onclick="setSort('name')">ㄱㄴㄷ순</button>
+        <button class="sort-btn" data-sort="score-asc" onclick="setSort('score-asc')">점수 낮은순</button>
+      </div>
+    </div>
   </div>
 
   <div class="layout">
