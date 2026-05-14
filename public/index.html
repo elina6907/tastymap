@@ -53,10 +53,31 @@
       letter-spacing: -0.2px;
     }
 
-    .container {
+    .layout {
       max-width: 680px;
       margin: 0 auto;
       padding: 0 24px 80px;
+    }
+
+    @media (min-width: 960px) {
+      .layout {
+        max-width: 1080px;
+        display: flex;
+        gap: 32px;
+        align-items: flex-start;
+      }
+
+      .sidebar {
+        width: 340px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 24px;
+      }
+
+      .main-content {
+        flex: 1;
+        min-width: 0;
+      }
     }
 
     /* 식당 추가 */
@@ -785,7 +806,7 @@
       .header { padding: 56px 20px 36px; }
       .header h1 { font-size: 36px; }
       .header p { font-size: 16px; }
-      .container { padding: 0 16px 60px; }
+      .layout { padding: 0 16px 60px; }
       .add-section, .card { padding: 24px 20px; }
       .field-group, .field-group.three-col, .field-group.two-col, .field-group.row-main, .field-group.row-detail, .field-group.row-links, .field-group.row-links-3 { grid-template-columns: 1fr; }
       .field-group.row-main { grid-template-columns: 1fr 80px; }
@@ -804,8 +825,9 @@
     <p>10점 만점, 함께 만드는 평점 시스템</p>
   </div>
 
-  <div class="container">
-    <div class="add-section">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="add-section">
       <div class="add-section-title">필수</div>
       <div class="field-group row-main">
         <div class="field">
@@ -915,7 +937,9 @@
       </div>
       <button class="submit-btn" onclick="addRestaurant()">등록하기</button>
     </div>
+    </div>
 
+    <div class="main-content">
     <div class="sort-bar">
       <button class="sort-btn active" data-sort="recent" onclick="setSort('recent')">최신순</button>
       <button class="sort-btn" data-sort="name" onclick="setSort('name')">ㄱㄴㄷ순</button>
@@ -924,7 +948,7 @@
     </div>
 
     <div id="list"></div>
-
+    </div>
   </div>
 
   <script>
